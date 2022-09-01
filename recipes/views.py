@@ -34,10 +34,16 @@ class RecipeListView(ListView):
     template_name = "recipes/list.html"
     paginate_by = 2
 
+    # def get_context_data(self, **kwargs):
+    #     context = super().get_context_data(**kwargs)
+    #     from pprint import pprint
+    #     pprint(context)
+    #     return context
 
 class RecipeDetailView(LoginRequiredMixin, DetailView):
     model = Recipe
     template_name = "recipes/detail.html"
+
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
