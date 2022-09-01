@@ -10,10 +10,10 @@
     </div>
     <h2>Recipes for {{ mealplan.name }} on {{mealplan.date}}</h2>
     <div>
-      {% for recipes in meal_plans %}
-      <li>
-        <a= href {% url 'recipe_detail' recipe.pk %}>{{recipe.name}}</a>
-      </li>
+      {% for recipe in mealplan.recipes.all %}
+      <h4 class="recipe-card-title">
+        <a href="{% url 'recipe_detail' recipe.pk %}">{{recipe.name}}</a>
+      </h4>
       {% endfor %}
     </div>
   </main>
