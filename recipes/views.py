@@ -79,6 +79,10 @@ class RecipeDetailView(LoginRequiredMixin, DetailView):
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
         context["rating_form"] = RatingForm()
+        foods = []
+        for item in self.request.user.shopping_items.all():
+            foods.append(item.food_item)
+        context["food_in_shopping_list"] = foods
         return context
 
 
