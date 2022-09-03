@@ -4,12 +4,15 @@ from django.views.generic.detail import DetailView
 from django.views.generic.edit import CreateView, DeleteView, UpdateView
 from django.views.generic.list import ListView
 from django.contrib.auth.mixins import LoginRequiredMixin
+from django.views.decorators.http import require_http_methods
+from django.db import IntegrityError
 
 from recipes.forms import RatingForm
 
 # try:
 # from recipes.forms import RecipeForm
-from recipes.models import Recipe
+from recipes.models import Recipe, ShoppingItem, Ingredient
+
 # except Exception:
 #     RecipeForm = None
 #     Recipe = None
@@ -29,6 +32,21 @@ def log_rating(request, recipe_id):
     return redirect("recipe_detail", pk=recipe_id)
 
 
+@require_http_methods(["POST"])
+def create_shopping_item(request):
+    ingredient_id = request.POST.get("ingredient_id")
+    ingredient = Ingredient.objects.get(id=ingredient_id)
+    user = request.user
+    try:
+        ShoppingItem.objects.create(
+            food_item=ingredient.food,
+            user=user,
+        )
+    except IntegrityError:
+        pass
+    return redirect("recipe_detail", pk=ingredient.recipe.id)
+
+
 class RecipeListView(ListView):
     model = Recipe
     template_name = "recipes/list.html"
@@ -40,10 +58,18 @@ class RecipeListView(ListView):
     #     pprint(context)
     #     return context
 
+
+class ShoppingItemListView(ListView):
+    model = ShoppingItem
+    template_name = "shopping_items/list.html"
+
+    def get_queryset(self):
+        return ShoppingItem.objects.filter(user=self.request.user)
+
+
 class RecipeDetailView(LoginRequiredMixin, DetailView):
     model = Recipe
     template_name = "recipes/detail.html"
-
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
@@ -56,6 +82,7 @@ class RecipeCreateView(LoginRequiredMixin, CreateView):
     template_name = "recipes/new.html"
     fields = ["name", "description", "image"]
     success_url = reverse_lazy("recipes_list")
+
     def form_valid(self, form):
         form.instance.author = self.request.user
         return super().form_valid(form)

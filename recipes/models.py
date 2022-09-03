@@ -10,7 +10,9 @@ USER_MODEL = settings.AUTH_USER_MODEL
 
 class Recipe(models.Model):
     name = models.CharField(max_length=125)
-    author = models.ForeignKey(USER_MODEL, related_name="recipes", on_delete=models.CASCADE, null=True)
+    author = models.ForeignKey(
+        USER_MODEL, related_name="recipes", on_delete=models.CASCADE, null=True
+    )
     description = models.TextField()
     image = models.URLField(null=True, blank=True)
     created = models.DateTimeField(auto_now_add=True)
@@ -77,4 +79,17 @@ class Rating(models.Model):
         "Recipe",
         related_name="ratings",
         on_delete=models.CASCADE,
+    )
+
+
+class ShoppingItem(models.Model):
+    user = models.ForeignKey(
+        USER_MODEL, related_name="shopping_items", on_delete=models.CASCADE
+    )
+
+    food_item = models.ForeignKey(
+        FoodItem,
+        related_name="shopping_item",
+        on_delete=models.PROTECT,
+        unique=True,
     )
