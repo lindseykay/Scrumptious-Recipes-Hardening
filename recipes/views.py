@@ -47,6 +47,11 @@ def create_shopping_item(request):
     return redirect("recipe_detail", pk=ingredient.recipe.id)
 
 
+def delete_all_shopping_items(request):
+    ShoppingItem.objects.filter(user=request.user).delete()
+    return redirect("shopping_list")
+
+
 class RecipeListView(ListView):
     model = Recipe
     template_name = "recipes/list.html"

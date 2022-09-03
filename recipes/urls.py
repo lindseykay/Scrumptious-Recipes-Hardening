@@ -9,6 +9,7 @@ from recipes.views import (
     RecipeListView,
     create_shopping_item,
     ShoppingItemListView,
+    delete_all_shopping_items,
 )
 
 urlpatterns = [
@@ -25,5 +26,10 @@ urlpatterns = [
     ),
     path(
         "shopping_items/", ShoppingItemListView.as_view(), name="shopping_list"
+    ),
+    path(
+        "shopping_items/delete/",
+        delete_all_shopping_items,
+        name="delete_all_shopping_items",
     ),
 ]
