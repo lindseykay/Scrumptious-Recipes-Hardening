@@ -1,5 +1,6 @@
 {% extends 'base.html' %}
 {% load markdownify %}
+{% load resizer %}
 
 
 {%block content%}
@@ -17,6 +18,13 @@
       Created on {{ recipe.created }} |
       Updated on {{ recipe.updated }}
     </p>
+    {% if recipe.servings %}
+    <p>Serves {{ servings|default_if_none:recipe.servings }}</p>
+    <form method="GET">
+      <input required type="number" name="servings">
+      <button>Resize</button>
+    </form>
+    {% endif %}
     <form method="post" action="{% url 'recipe_rating' recipe.id %}">
       {% csrf_token %}
       <div class="rating-form-grid">
@@ -37,7 +45,7 @@
       <tbody>
         {% for ingredient in recipe.ingredients.all %}
           <tr>
-            <td>{{ ingredient.amount }}</td>
+            <td>{{ ingredient|resize_to:servings }}</td>
             <td>{{ ingredient.measure.name }}</td>
             <td>{{ ingredient.food.name }}</td>
             {% if ingredient.food not in food_in_shopping_list %}
